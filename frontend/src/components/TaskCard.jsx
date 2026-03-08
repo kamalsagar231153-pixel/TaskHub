@@ -1,5 +1,5 @@
 function TaskCard({ task, onDelete }) {
-  const BASE_URL = "http://localhost:4000";
+  const BASE_URL = "https://taskhub-3-i600.onrender.com";
 
   const getStatusStyle = () => {
     if (task.status === "Completed")

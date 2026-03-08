@@ -621,7 +621,7 @@ Admin Attachments
 
 <a
 key={index}
-href={`http://localhost:4000/uploads/${file}`}
+href={`https://taskhub-3-i600.onrender.com/uploads/${file}`}
 target="_blank"
 rel="noopener noreferrer"
 className="flex items-center gap-2 text-blue-400 hover:text-blue-300 text-sm"
@@ -1036,7 +1036,7 @@ Admin Attachments
 
 <a
 key={index}
-href={`http://localhost:4000/uploads/${file}`}
+href={`https://taskhub-3-i600.onrender.com/uploads/${file}`}
 target="_blank"
 rel="noopener noreferrer"
 className="flex items-center gap-2 text-blue-400 text-sm hover:text-blue-300 transition"
@@ -1068,7 +1068,7 @@ Employee Submission
 
 <a
 key={index}
-href={`http://localhost:4000/uploads/${file}`}
+href={`https://taskhub-3-i600.onrender.com/uploads/${file}`}
 target="_blank"
 rel="noopener noreferrer"
 className="flex items-center gap-2  bg-
@@ -1229,7 +1229,7 @@ Admin Attachments
 
 <a
 key={index}
-href={`http://localhost:4000/uploads/${file}`}
+href={`https://taskhub-3-i600.onrender.com/uploads/${file}`}
 target="_blank"
 rel="noopener noreferrer"
 className="flex items-center gap-2 text-blue-400 text-sm hover:text-blue-300 transition"

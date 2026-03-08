@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const API = axios.create({
-  baseURL: "http://localhost:4000/api",
+  baseURL: "https://taskhub-3-i600.onrender.com/api",
 });
 
 API.interceptors.request.use((config) => {

@@ -1630,7 +1630,7 @@ space-y-2
                               {task.adminFiles.map((file, index) => (
                                 <a
                                   key={index}
-                                  href={`http://localhost:4000/uploads/${file}`}
+                                  href={`https://taskhub-3-i600.onrender.com/uploads/${file}`}
                                   target="_blank"
                                   rel="noopener noreferrer"
                                   className="flex items-center gap-2 text-blue-400 hover:text-blue-300 text-sm"
@@ -1668,7 +1668,7 @@ className="flex items-center justify-between"
 >
 
 <a
-href={`http://localhost:4000/uploads/${file}`}
+href={`https://taskhub-3-i600.onrender.com/uploads/${file}`}
 target="_blank"
 rel="noopener noreferrer"
 className="flex items-center gap-2 text-green-400 text-sm hover:text-green-300"
@@ -1683,7 +1683,7 @@ className="flex items-center gap-2 text-green-400 text-sm hover:text-green-300"
 <div className="flex gap-3">
 
 <a
-href={`http://localhost:4000/uploads/${file}`}
+href={`https://taskhub-3-i600.onrender.com/uploads/${file}`}
 target="_blank"
 className="text-green-400 hover:text-green-300"
 >
@@ -1968,7 +1968,7 @@ bg-black/30 border border-white/10
                     {/* Proof File */}
                     {ext.proofFile && (
                       <a
-                        href={`http://localhost:4000/uploads/${ext.proofFile}`}
+                        href={`https://taskhub-3-i600.onrender.com/uploads/${ext.proofFile}`}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="
