@@ -22,6 +22,7 @@ The platform improves productivity, transparency, and workflow efficiency within
 - React.js
 - Vite
 - CSS / UI Components
+- Tailwind CSS
 
 **Backend**
 - Node.js
@@ -138,7 +139,7 @@ npm install
 ### Run Backend
 
 ```bash
-npm run server
+npm run dev/server
 ```
 
 ### Run Frontend
