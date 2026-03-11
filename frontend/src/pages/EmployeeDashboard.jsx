@@ -1,7 +1,8 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import API from "../api/axios";
 import EmployeeSidebar from "../components/EmployeeSidebar";
 import { toast } from "react-toastify";
+import { useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import {
   Mail,
@@ -12,7 +13,9 @@ import {
   CheckCircle2,
   Clock,
   FileText,
-  ClipboardList
+  ClipboardList,
+  Send,
+  Trash2
 } from "lucide-react";
 import {
   FaFilePdf,
@@ -23,25 +26,56 @@ import {
 } from "react-icons/fa";
 
 function EmployeeDashboard() {
+  const location = useLocation();
+const query = new URLSearchParams(location.search);
+const view = query.get("view");
   const { user } = useAuth();
+  const [collapsed, setCollapsed] = useState(false);
   const [tasks, setTasks] = useState([]);
   const [extensionData, setExtensionData] = useState({});
   const [reason, setReason] = useState({});
   const [extensionFile, setExtensionFile] = useState({});
 const [completionFiles, setCompletionFiles] = useState({});
+const completedRef = useRef(null);
+const failedRef = useRef(null);
 
-  useEffect(() => {
-    fetchTasks();
-  }, []);
+const fetchTasks = async () => {
+  try {
+    const res = await API.get("/tasks");
+    setTasks(res.data);
+  } catch (error) {
+    toast.error("Failed to load tasks");
+  }
+};
 
-  const fetchTasks = async () => {
-    try {
-      const res = await API.get("/tasks");
-      setTasks(res.data);
-    } catch (error) {
-      toast.error("Failed to load tasks");
-    }
-  };
+useEffect(() => {
+
+  if (view === "completed" && completedRef.current) {
+    completedRef.current.scrollIntoView({
+      behavior: "smooth",
+      block: "start"
+    });
+  }
+
+  else if (view === "failed" && failedRef.current) {
+    failedRef.current.scrollIntoView({
+      behavior: "smooth",
+      block: "start"
+    });
+  }
+
+  else {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth"
+    });
+  }
+
+}, [view]);
+
+useEffect(() => {
+  fetchTasks();
+}, []);
 
   const handleComplete = async (id) => {
     try {
@@ -147,11 +181,38 @@ const getFileIcon = (filename) => {
   return <FaFile className="text-gray-400 text-lg" />;
 };
 
-  return (
-<div className="flex">
-  <EmployeeSidebar />
+const secureComplete = (taskId) => {
 
-  <div className="ml-64 p-8 w-full">
+const confirmStep1 = window.confirm(
+"Do you really want to mark this task as completed?"
+);
+
+if (!confirmStep1) return;
+
+const confirmStep2 = window.confirm(
+"Final confirmation: Once marked completed, the task cannot be changed.\nProceed?"
+);
+
+if (confirmStep2) {
+handleComplete(taskId);
+}
+
+};
+
+
+  return (
+<div className="min-h-screen w-full">
+<EmployeeSidebar collapsed={collapsed} setCollapsed={setCollapsed} />
+
+<div
+className={`
+
+transition-all duration-300 ease-in-out
+${collapsed ? "md:ml-[80px]" : "md:ml-[256px]"}
+ml-0
+p-4 sm:p-6 md:p-8
+`}
+>
 
 {/* ================= PREMIUM EMPLOYEE DASHBOARD HEADER ================= */}
 
@@ -161,7 +222,7 @@ relative
 group
 overflow-hidden
 rounded-3xl
-p-10
+p-5 sm:p-8 md:p-10
 mb-12
 bg-gradient-to-r from-[#092058] via-[#0f172a] to-[#052e16]
 border border-white/10
@@ -191,7 +252,7 @@ bg-gradient-to-r from-blue-500 via-purple-500 to-green-500
 <div
 className="
 relative
-w-16 h-16
+w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16
 flex items-center justify-center
 rounded-full
 bg-gradient-to-br from-blue-500 to-purple-600
@@ -220,7 +281,7 @@ border border-[#020617]
 <h1
 className="
 flex items-center gap-3
-text-3xl font-bold
+text-xl sm:text-2xl md:text-3xl font-bold
 tracking-wide
 bg-gradient-to-r from-red-400 via-blue-400 to-green-400
 bg-clip-text
@@ -461,8 +522,7 @@ they will appear here for you to review and submit.
 </div>
 
 
-
-<div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
+<div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5 md:gap-8">
 
 {activeTasks.map((task) => (
 
@@ -470,7 +530,7 @@ they will appear here for you to review and submit.
 key={task._id}
 className={`
 group relative w-full
-${task.status === "Completed" ? "max-w-[420px] p-5" : "max-w-[520px] p-8"}
+${task.status === "Completed" ? "p-4 sm:p-5" : "p-5 sm:p-6 md:p-8"}
 rounded-3xl
 bg-gradient-to-br from-[#020617] via-[#0f172a] to-[#020617]
 border border-white/10
@@ -512,37 +572,43 @@ ${task.status === "Failed" && "bg-red-500/20 text-red-400"}
 
 {/* TASK TITLE */}
 
-<h2 className={`font-bold text-white flex items-center gap-2 ${
+<h2 className={`font-bold text-white flex items-center gap-2 pr-24 ${
 task.status === "Completed" ? "text-base mb-3" : "text-lg md:text-xl mb-6"
 }`}>
 <span className="text-blue-400">Task Notes:</span>
-{task.description}
+<span className="break-words leading-relaxed">{task.description}</span>
 </h2>
 
 
 {/* INFO GRID */}
 
-<div className={`grid grid-cols-1 sm:grid-cols-2 ${
-task.status === "Completed" ? "gap-3 mb-3" : "gap-4 mb-6"
-}`}>
+<div className={`grid grid-cols-1 md:grid-cols-2 ${task.status === "Completed" ? "p-4 sm:p-5" : "p-5 sm:p-6 md:p-8"}`}>
 
-
-{/* ADMIN EMAIL */}
-
-<div className={`flex items-center gap-3 bg-black/30 ${
+<div
+className={`flex items-center gap-3 bg-black/30 ${
 task.status === "Completed" ? "p-3" : "p-4"
-} rounded-xl border border-white/10 hover:border-blue-500/40 transition`}>
-<Mail size={18} className="text-blue-400"/>
+} rounded-xl border border-white/10 hover:border-blue-500/40 transition`}
+>
 
-<div>
-<p className="text-xs text-gray-400">Admin Email</p>
-<p className="text-white text-sm truncate">
+{/* ICON */}
+<div className="flex-shrink-0">
+<Mail size={18} className="text-blue-400"/>
+</div>
+
+{/* TEXT */}
+<div className="min-w-0 flex-1">
+
+<p className="text-xs text-gray-400">
+Admin Email
+</p>
+
+<p className="text-white text-sm break-all">
 {task.assignedBy?.adminEmail || "Not available"}
 </p>
-</div>
 
 </div>
 
+</div>
 
 {/* ROLE */}
 
@@ -594,10 +660,6 @@ task.status === "Completed" ? "p-3" : "p-4"
 </div>
 
 </div>
-
-
-
-{/* ADMIN FILE */}
 
 {/* Admin Attachments */}
 
@@ -679,7 +741,7 @@ Admin Instruction
 {/* COMPLETE BUTTON */}
 
 <button
-onClick={() => handleComplete(task._id)}
+onClick={() => secureComplete(task._id)}
 className="w-full py-3 rounded-xl
 bg-gradient-to-r from-green-500 to-emerald-600
 text-white font-semibold
@@ -699,10 +761,13 @@ Mark as Completed
 
 {/* FILE UPLOAD */}
 
+{/* FILE UPLOAD */}
+<div className="space-y-2">
+
 <label
-className="flex items-center justify-between bg-[#111827] p-3 rounded-lg border border-white/10 cursor-pointer
-hover:border-blue-500/40 hover:bg-[#0f172a] transition
-">
+className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 bg-[#111827] p-3 rounded-lg border border-white/10 cursor-pointer
+hover:border-blue-500/40 hover:bg-[#0f172a] transition"
+>
 
 <div>
 
@@ -712,7 +777,7 @@ Attach Task File
 
 <p className="text-xs text-gray-500">
 
-{completionFiles?.[task._id]
+{completionFiles?.[task._id]?.length
 ? `${completionFiles[task._id].length} file(s) selected`
 : "Attach files or docs"}
 
@@ -728,13 +793,62 @@ multiple
 onChange={(e) =>
 setCompletionFiles({
 ...completionFiles,
-[task._id]: [...e.target.files],
+[task._id]: [
+...(completionFiles?.[task._id] || []),
+...Array.from(e.target.files),
+],
 })
 }
 className="hidden"
 />
 
 </label>
+
+
+{/* SELECTED FILE LIST */}
+
+{completionFiles?.[task._id]?.length > 0 && (
+
+<div className="space-y-2">
+
+{completionFiles[task._id].map((file,index)=>(
+
+<div
+key={index}
+className="flex items-center justify-between bg-[#020617] border border-white/10 rounded-md px-3 py-2 text-sm"
+>
+
+<div className="flex items-center gap-2 text-gray-300 truncate">
+
+<FileText size={16}/>
+<span className="truncate">{file.name}</span>
+
+</div>
+
+<button
+type="button"
+onClick={() =>
+setCompletionFiles({
+...completionFiles,
+[task._id]: completionFiles[task._id].filter((_,i)=>i!==index)
+})
+}
+className="text-red-400 hover:text-red-300 transition"
+>
+
+<Trash2 size={16}/>
+
+</button>
+
+</div>
+
+))}
+
+</div>
+
+)}
+
+</div>
 
 
 
@@ -902,7 +1016,7 @@ Submit Extension
 
 {/* ================= COMPLETED TASKS HEADER ================= */}
 
-<div className="mt-16 mb-8">
+<div ref={completedRef} className="mt-16 mb-8">
 
 <div
 className="
@@ -960,7 +1074,7 @@ Tasks you have successfully completed and submitted.
 
 </div>
 
-<div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+<div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5 md:gap-6">
 
 {completedTasks.map((task) => (
 
@@ -987,9 +1101,9 @@ overflow-hidden
 Completed
 </div>
 
-<h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
-<span className="text-green-400">Task:</span>
-{task.description}
+<h3 className="text-lg font-bold text-white mb-4 pr-24 leading-relaxed">
+<span className="text-green-400 mr-1">Task:</span>
+<span className="break-words">{task.description}</span>
 </h3>
 
 <div className="grid grid-cols-2 gap-3 mb-4">
@@ -1071,9 +1185,7 @@ key={index}
 href={`https://taskhub-3-i600.onrender.com/uploads/${file}`}
 target="_blank"
 rel="noopener noreferrer"
-className="flex items-center gap-2  bg-
-
-text-green-400 text-sm hover:text-green-300 transition"
+className="flex items-center gap-2 text-green-400 text-sm hover:text-green-300 transition"
 >
 
 {getFileIcon(file)}
@@ -1099,7 +1211,7 @@ text-green-400 text-sm hover:text-green-300 transition"
 
 {/* ================= FAILED TASKS ================= */}
 
-<div className="mt-16 mb-8">
+<div ref={failedRef} className="mt-16 mb-8">
 
 <div
 className="
@@ -1155,7 +1267,7 @@ Tasks that missed their deadline or were rejected by the admin.
 </div>
 
 
-<div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
+<div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5 md:gap-8">
 
 {failedTasks.length === 0 && (
 <p className="text-gray-400">No failed tasks</p>
@@ -1184,9 +1296,9 @@ overflow-hidden
 Failed
 </div>
 
-<h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
-<span className="text-red-400">Task:</span>
-{task.description}
+<h3 className="text-lg font-bold text-white mb-4 pr-24 leading-relaxed">
+<span className="text-red-400 mr-1">Task:</span>
+<span className="break-words">{task.description}</span>
 </h3>
 
 <div className="grid grid-cols-2 gap-3 mb-4">

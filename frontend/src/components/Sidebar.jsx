@@ -6,19 +6,22 @@ import logo from "../assets/taskhub-logo.svg";
 import {
   FiMenu,
   FiHome,
-  FiClipboard,
   FiBarChart2,
-  FiUser,
-  FiLogOut
+  FiPlusSquare,
+  FiDownload,
+  FiClipboard,
+  FiClock,
+  FiLogOut,
+  FiX
 } from "react-icons/fi";
 
-function Sidebar() {
+function Sidebar({ collapsed, setCollapsed }) {
 
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
 
-  const [collapsed, setCollapsed] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
 
   const handleLogout = () => {
     logout();
@@ -27,102 +30,180 @@ function Sidebar() {
 
   const menuItems = [
     { name: "Dashboard", icon: <FiHome />, path: "/admin" },
-    { name: "Tasks", icon: <FiClipboard />, path: "/admin/tasks" },
-    { name: "Analytics", icon: <FiBarChart2 />, path: "/admin/analytics" },
-    { name: "Profile", icon: <FiUser />, path: "/profile" }
+    { name: "Analytics", icon: <FiBarChart2 />, path: "/admin?view=analytics" },
+    { name: "Assign", icon: <FiPlusSquare />, path: "/admin?view=assign" },
+    { name: "Download", icon: <FiDownload />, path: "/admin?view=download" },
+    { name: "Task Cards", icon: <FiClipboard />, path: "/admin?view=tasks" },
+    { name: "Extension", icon: <FiClock />, path: "/admin?view=extensions" }
   ];
 
   return (
-    <div
-      className={`fixed top-0 left-0 h-screen z-50
-      ${collapsed ? "w-20" : "w-72"}
-      transition-all duration-300
-      bg-[#020617]
-      border-r border-white/10
-      shadow-[0_25px_80px_rgba(0,0,0,0.9)]
-      `}
-    >
+    <>
+      {/* MOBILE MENU BUTTON */}
 
-      <div className="flex flex-col h-full">
+      <button
+        onClick={() => setMobileOpen(true)}
+        className="
+        md:hidden
+        fixed top-4 left-4 z-50
+        p-3
+        rounded-xl
+        bg-[#020617]
+        border border-white/10
+        text-white
+        shadow-lg
+        "
+      >
+        <FiMenu size={20}/>
+      </button>
+
+
+      {/* MOBILE OVERLAY */}
+
+      {mobileOpen && (
+        <div
+          onClick={() => setMobileOpen(false)}
+          className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 md:hidden"
+        />
+      )}
+
+
+      {/* SIDEBAR */}
+
+      <div
+        className={`
+        fixed top-0 left-0 h-screen z-50
+        bg-gradient-to-b from-[#020617] via-[#020617] to-[#0f172a]
+        border-r border-blue-900/40
+        shadow-[0_20px_80px_rgba(0,0,0,0.8)]
+        backdrop-blur-xl
+        transition-all duration-300
+
+        ${collapsed ? "md:w-20" : "md:w-64"}
+
+        w-64
+        ${mobileOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"}
+        `}
+      >
+
+        <div className="flex flex-col h-full">
 
 {/* ================= HEADER ================= */}
 
+<div className="relative flex items-center justify-between px-5 py-5 border-b border-blue-900/40">
 
-
-<div className="flex items-center justify-between px-5 py-4 border-b border-white/10">
-
-
+<div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-blue-500 via-blue-400 to-blue-500"/>
 
 <div className="flex items-center gap-3">
 
 <img
 src={logo}
 alt="TaskHub"
-className={`transition-all duration-300
-${collapsed ? "w-14 h-14 mx-auto" : "w-16 h-16"}
-drop-shadow-[0_0_18px_rgba(99,102,241,0.9)]`}
+className="w-10 h-10 object-contain drop-shadow-[0_0_15px_rgba(59,130,246,0.7)]"
 />
 
 {!collapsed && (
-<h1
-className="
-text-lg
-font-semibold
-tracking-wide
-bg-gradient-to-r from-red-400 via-blue-400 to-green-400
-bg-clip-text
-text-transparent
-"
->
+<h1 className="text-lg font-bold bg-gradient-to-r from-blue-400 to-blue-500 bg-clip-text text-transparent">
 TaskHub
 </h1>
 )}
 
 </div>
 
+<div className="flex items-center gap-2">
+
 <button
 onClick={() => setCollapsed(!collapsed)}
-className="text-gray-400 hover:text-white transition"
+className="hidden md:block p-2 rounded-lg text-gray-400 hover:text-white hover:bg-blue-900/20"
 >
-<FiMenu size={20}/>
+<FiMenu size={18}/>
+</button>
+
+<button
+onClick={() => setMobileOpen(false)}
+className="md:hidden p-2 rounded-lg text-gray-400 hover:text-white hover:bg-blue-900/20"
+>
+<FiX size={18}/>
 </button>
 
 </div>
 
-{/* ================= NAVIGATION ================= */}
+</div>
 
-<div className="flex-1 px-3 py-6 space-y-2">
+
+{/* ================= ADMIN CARD ================= */}
+
+{!collapsed && (
+
+<div className="px-4 py-5 border-b border-blue-900/40">
+
+<div className="
+p-4
+rounded-xl
+bg-gradient-to-br from-[#0f172a] to-[#020617]
+border border-blue-900/40
+shadow-[0_10px_40px_rgba(0,0,0,0.7)]
+">
+
+<p className="text-xs text-gray-400">
+Admin Panel
+</p>
+
+<p className="text-white font-semibold text-lg mt-1">
+{user?.name}
+</p>
+
+<p className="text-blue-400 text-sm mt-1">
+{user?.role}
+</p>
+
+</div>
+
+</div>
+
+)}
+
+
+{/* ================= MENU ================= */}
+
+<div className="flex-1 px-3 py-5 space-y-2">
 
 {menuItems.map((item, index) => {
 
-const active = location.pathname === item.path;
+const active =
+location.pathname + location.search === item.path ||
+(location.pathname === "/admin" && item.path === "/admin" && !location.search);
 
 return (
 
 <div
 key={index}
-onClick={() => navigate(item.path)}
+onClick={() => {
+navigate(item.path);
+setMobileOpen(false);
+}}
 className={`
-relative flex items-center gap-3 px-4 py-3 rounded-xl cursor-pointer
-transition-all duration-300 group
+group flex items-center gap-3 px-4 py-3 rounded-xl cursor-pointer
+transition-all duration-200
 
 ${active
-? "bg-gradient-to-r from-red-500/20 to-blue-500/20 text-white border border-white/10"
-: "text-gray-400 hover:bg-white/5 hover:text-white"
-}
+? "bg-gradient-to-r from-blue-700 to-blue-600 text-white shadow-lg"
+: "text-gray-400 hover:bg-blue-900/20 hover:text-white"}
 `}
 >
 
-{active && (
-<div className="absolute left-0 top-2 bottom-2 w-1 bg-gradient-to-b from-red-500 to-blue-500 rounded-full"/>
-)}
-
-<div className="text-lg group-hover:scale-110 transition">
+<div
+className={`
+flex items-center justify-center
+w-9 h-9 rounded-lg
+${active ? "bg-white/20" : "bg-white/5 group-hover:bg-white/10"}
+`}
+>
 {item.icon}
 </div>
 
 {!collapsed && (
-<span className="font-medium tracking-wide">
+<span className="text-sm font-medium tracking-wide">
 {item.name}
 </span>
 )}
@@ -135,93 +216,29 @@ ${active
 
 </div>
 
-{/* ================= ADMIN WELCOME CARD ================= */}
-
-{!collapsed && (
-
-<div className="px-4 mb-4">
-
-<div
-className="
-relative
-p-5
-rounded-2xl
-bg-gradient-to-br from-[#0f172a] to-[#020617]
-border border-white/10
-shadow-[0_15px_60px_rgba(0,0,0,0.8)]
-overflow-hidden
-transition-all duration-300
-hover:scale-[1.03]
-hover:shadow-[0_25px_80px_rgba(0,0,0,1)]
-"
->
-
-{/* glow effects */}
-
-<div className="absolute -top-10 -left-10 w-32 h-32 bg-red-500/20 blur-2xl rounded-full"></div>
-<div className="absolute -bottom-10 -right-10 w-32 h-32 bg-blue-500/20 blur-2xl rounded-full"></div>
-
-<div className="relative flex items-center gap-4">
-
-{/* avatar */}
-
-<div className="
-w-12 h-12
-rounded-full
-bg-gradient-to-br from-blue-500 to-purple-600
-flex items-center justify-center
-text-white font-semibold
-shadow-md
-">
-
-{user?.name?.charAt(0)}
-
-</div>
-
-<div>
-
-<p className="text-gray-400 text-sm">
-Welcome,
-</p>
-
-<p className="text-white font-semibold text-lg">
-{user?.name || "Admin"}
-</p>
-
-<p className="text-blue-400 text-sm">
-{user?.role || "Administrator"}
-</p>
-
-</div>
-
-</div>
-
-</div>
-
-</div>
-
-)}
 
 {/* ================= LOGOUT ================= */}
 
-<div className="p-4 border-t border-white/10">
+<div className="p-4 border-t border-blue-900/40">
 
 <button
 onClick={handleLogout}
 className="
-w-full flex items-center justify-center gap-3
-px-4 py-3 rounded-xl
+group
+w-full
+flex items-center justify-center gap-3
+px-4 py-3
+rounded-xl
 bg-gradient-to-r from-red-600 to-red-500
-text-white font-medium
-shadow-lg
-hover:shadow-red-500/40
-hover:scale-[1.03]
-active:scale-[0.96]
+hover:from-red-500 hover:to-red-400
+text-white
+font-medium
+shadow-lg shadow-red-500/20
 transition
 "
 >
 
-<FiLogOut/>
+<FiLogOut className="group-hover:rotate-12 transition"/>
 
 {!collapsed && "Logout"}
 
@@ -229,9 +246,9 @@ transition
 
 </div>
 
+        </div>
       </div>
-
-    </div>
+    </>
   );
 }
 

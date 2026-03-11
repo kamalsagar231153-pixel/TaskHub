@@ -58,7 +58,8 @@ function Login() {
   };
 
   return (
-    <div className="relative h-screen flex items-center justify-center bg-[#020617] overflow-hidden">
+
+    <div className="relative min-h-screen flex items-center justify-center bg-[#020617] overflow-hidden px-4">
 
       {/* Animated Gradient Lights */}
 
@@ -74,7 +75,7 @@ function Login() {
         className="absolute -bottom-40 -right-40 w-[500px] h-[500px] bg-red-600/20 blur-[140px]"
       />
 
-      {/* Subtle grid */}
+      {/* Grid background */}
 
       <div className="absolute inset-0 opacity-10 bg-[linear-gradient(#ffffff10_1px,transparent_1px),linear-gradient(90deg,#ffffff10_1px,transparent_1px)] bg-[size:40px_40px]" />
 
@@ -89,32 +90,31 @@ function Login() {
           rotateY: -3,
           scale: 1.02
         }}
-        className="relative grid md:grid-cols-2 w-[900px] rounded-3xl overflow-hidden shadow-[0_30px_120px_rgba(0,0,0,0.9)] border border-white/10"
+        className="relative grid md:grid-cols-2 w-full max-w-[900px] rounded-3xl overflow-hidden shadow-[0_30px_120px_rgba(0,0,0,0.9)] border border-white/10"
       >
 
         {/* LEFT PANEL */}
 
-        <div className="hidden md:flex flex-col justify-center p-12 bg-gradient-to-br from-[#020617] via-[#0f172a] to-[#020617] border-r border-white/10">
+        <div className="hidden md:flex flex-col justify-center p-10 bg-gradient-to-br from-[#020617] via-[#0f172a] to-[#020617] border-r border-white/10">
 
+          <div className="flex flex-col items-center justify-center mb-6">
 
-<div className="flex flex-col items-center justify-center mb-6">
+            <img
+              src={logo}
+              alt="TaskHub Logo"
+              className="w-36 h-36 lg:w-48 lg:h-48 drop-shadow-[0_0_50px_rgba(99,102,241,0.9)]"
+            />
 
-<img
-  src={logo}
-  alt="TaskHub Logo"
-  className="w-48 h-48 drop-shadow-[0_0_50px_rgba(99,102,241,0.9)]"
-/>
+            <motion.h1
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+              className="text-3xl lg:text-4xl font-bold text-white mt-4"
+            >
+              TaskHub
+            </motion.h1>
 
-<motion.h1
-  initial={{ opacity: 0, y: -20 }}
-  animate={{ opacity: 1, y: 0 }}
-  transition={{ delay: 0.2 }}
-  className="text-4xl font-bold text-white mt-4"
->
-  TaskHub
-</motion.h1>
-
-</div>
+          </div>
 
           <p className="text-blue-400 font-medium mb-6">
             Organize Work. Track Progress. Empower Teams.
@@ -144,7 +144,7 @@ function Login() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
           onSubmit={handleSubmit}
-          className="p-10 bg-white/5 backdrop-blur-xl border border-white/10 flex flex-col justify-center"
+          className="p-6 sm:p-10 bg-white/5 backdrop-blur-xl border border-white/10 flex flex-col justify-center"
         >
 
           <h2 className="text-2xl font-semibold text-white mb-2">
@@ -158,7 +158,6 @@ function Login() {
           {/* Email */}
 
           <motion.div
-            whileFocus={{ scale: 1.02 }}
             whileHover={{ scale: 1.01 }}
             className="relative mb-4"
           >
@@ -168,6 +167,7 @@ function Login() {
             <input
               type="email"
               placeholder="Enter your email"
+              required
               className="w-full pl-10 p-3 rounded-xl bg-[#020617] border border-blue-500/30 text-white focus:outline-none focus:border-blue-500 focus:shadow-[0_0_12px_rgba(59,130,246,0.5)] transition-all duration-300"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
@@ -187,6 +187,7 @@ function Login() {
             <input
               type={showPassword ? "text" : "password"}
               placeholder="Enter your password"
+              required
               className="w-full pl-10 pr-10 p-3 rounded-xl bg-[#020617] border border-red-500/30 text-white focus:outline-none focus:border-red-500 focus:shadow-[0_0_12px_rgba(239,68,68,0.5)] transition-all duration-300"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
@@ -210,17 +211,7 @@ function Login() {
               boxShadow: "0px 10px 40px rgba(59,130,246,0.5)"
             }}
             whileTap={{ scale: 0.95 }}
-            className="
-            w-full
-            p-3
-            rounded-xl
-            bg-gradient-to-r from-blue-600 to-red-600
-            text-white
-            font-semibold
-            shadow-lg
-            transition-all
-            duration-300
-            "
+            className="w-full p-3 rounded-xl bg-gradient-to-r from-blue-600 to-red-600 text-white font-semibold shadow-lg transition-all duration-300"
           >
             Login to TaskHub
           </motion.button>
@@ -246,6 +237,7 @@ function Login() {
       </motion.div>
 
     </div>
+
   );
 }
 

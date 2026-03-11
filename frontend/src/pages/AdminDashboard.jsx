@@ -1,10 +1,11 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import API from "../api/axios";
 import Sidebar from "../components/Sidebar";
 import Loader from "../components/Loader";
 import { toast } from "react-toastify";
 import { motion } from "framer-motion";
 import { useAuth } from "../context/AuthContext";
+import { useLocation } from "react-router-dom";
 import {
   Plus,
   Download,
@@ -110,12 +111,21 @@ import autoTable from "jspdf-autotable";
 
 function AdminDashboard() {
   const { user } = useAuth();
+  const [collapsed, setCollapsed] = useState(false);
   const [tasks, setTasks] = useState([]);
   const [extensions, setExtensions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [files, setFiles] = useState([]);
   const [instruction, setInstruction] = useState({});
   const [activeIndex, setActiveIndex] = useState(null);
+
+const location = useLocation();
+
+const analyticsRef = useRef(null);
+const assignRef = useRef(null);
+const downloadRef = useRef(null);
+const tasksRef = useRef(null);
+const extensionsRef = useRef(null);
 
   const [form, setForm] = useState({
     employeeEmail: "",
@@ -128,6 +138,35 @@ function AdminDashboard() {
   useEffect(() => {
     fetchAll();
   }, []);
+
+  useEffect(() => {
+
+  const params = new URLSearchParams(location.search);
+  const view = params.get("view");
+
+  const scrollOptions = { behavior: "smooth", block: "start" };
+
+  if (!view) {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+    return;
+  }
+
+  if (view === "analytics" && analyticsRef.current)
+    analyticsRef.current.scrollIntoView(scrollOptions);
+
+  if (view === "assign" && assignRef.current)
+    assignRef.current.scrollIntoView(scrollOptions);
+
+  if (view === "download" && downloadRef.current)
+    downloadRef.current.scrollIntoView(scrollOptions);
+
+  if (view === "tasks" && tasksRef.current)
+    tasksRef.current.scrollIntoView(scrollOptions);
+
+  if (view === "extensions" && extensionsRef.current)
+    extensionsRef.current.scrollIntoView(scrollOptions);
+
+}, [location.search]);
 
   const fetchAll = async () => {
     try {
@@ -496,15 +535,19 @@ function AdminDashboard() {
   };
 
   return (
-    <div className="flex">
-      <Sidebar />
-      <div
-        className="
-    relative ml-64 p-10 w-full min-h-screen space-y-10
-    bg-gradient-to-br from-[#020617] via-[#0f172a] to-[#111827]
-    overflow-hidden
-    "
-      >
+<div className="flex flex-col md:flex-row">
+  <Sidebar collapsed={collapsed} setCollapsed={setCollapsed} />
+<div
+className={`
+relative w-full
+transition-all duration-300
+${collapsed ? "md:ml-20" : "md:ml-72"}
+p-4 sm:p-6 md:p-10
+min-h-screen space-y-10
+bg-gradient-to-br from-[#020617] via-[#0f172a] to-[#111827]
+overflow-hidden
+`}
+>
         {/* Background ambient glow */}
         <div
           className="absolute inset-0 -z-10
@@ -512,168 +555,206 @@ bg-[radial-gradient(circle_at_20%_20%,#3b82f630,transparent_40%),
 radial-gradient(circle_at_80%_70%,#9333ea30,transparent_40%)]"
         />
 
-        {/* ================= ULTRA PREMIUM ADMIN HEADER ================= */}
+{/* ================= ULTRA PREMIUM ADMIN HEADER ================= */}
 
-        <div
-          className="
+{/* ================= PREMIUM ADMIN DASHBOARD HEADER ================= */}
+
+<div
+className="
 relative
 rounded-3xl
-px-12 py-10
-mb-12
-bg-gradient-to-r from-[#020617] via-[#0f172a] to-[#020617]
+p-5 sm:p-8 md:p-10
+mb-10
+bg-gradient-to-r from-[#020617] via-[#0f172a] to-[#022c22]
 border border-white/10
-shadow-[0_40px_120px_rgba(0,0,0,0.9)]
+shadow-[0_35px_100px_rgba(0,0,0,0.9)]
 backdrop-blur-xl
 overflow-hidden
 "
-        >
-          {/* Animated Top Gradient */}
-          <div
-            className="absolute top-0 left-0 w-full h-[3px]
-bg-gradient-to-r from-red-500 via-purple-500 to-blue-500 animate-pulse"
-          />
+>
 
-          {/* Floating Lights */}
-          <div className="absolute -top-32 -left-32 w-[450px] h-[450px] bg-red-500/20 blur-[180px] rounded-full" />
-          <div className="absolute -bottom-32 -right-32 w-[450px] h-[450px] bg-blue-500/20 blur-[180px] rounded-full" />
+{/* Top Animated Gradient Line */}
 
-          <div className="relative z-10 flex items-center justify-between">
-            {/* ================= LEFT SIDE ================= */}
+<div className="absolute top-0 left-0 w-full h-[3px] bg-gradient-to-r from-blue-500 via-green-500 to-blue-600"/>
 
-            <div className="flex items-center gap-7">
-              {/* Dashboard Icon */}
-              <div
-                className="
+{/* Ambient Glow Effects */}
+
+<div className="absolute -top-32 -left-32 w-[420px] h-[420px] bg-blue-500/20 blur-[160px] rounded-full"/>
+<div className="absolute -bottom-32 -right-32 w-[420px] h-[420px] bg-green-500/20 blur-[160px] rounded-full"/>
+
+<div className="relative z-10 flex flex-col xl:flex-row gap-8 xl:items-center xl:justify-between">
+
+{/* ================= LEFT CONTENT ================= */}
+
+<div className="flex flex-col gap-6 max-w-3xl">
+
+{/* TITLE ROW */}
+
+<div className="flex items-center gap-4">
+
+{/* Icon */}
+
+<div
+className="
 flex items-center justify-center
-w-16 h-16
-rounded-2xl
-bg-gradient-to-br from-red-500/20 via-purple-500/20 to-blue-500/20
+w-12 h-12 sm:w-14 sm:h-14
+rounded-xl
+bg-gradient-to-br from-blue-500/20 to-green-500/20
 border border-white/10
-shadow-inner
+shadow-lg
 "
-              >
-                <span className="text-3xl">🧑‍💻</span>
-              </div>
+>
+<span className="text-xl sm:text-2xl">🧑‍💻</span>
+</div>
 
-              <div>
-                {/* Title */}
-                <div className="flex items-center gap-3">
-                  <span className="text-2xl">⚡</span>
+{/* Title */}
 
-                  <h1
-                    className="
-    text-4xl
-    font-bold
-    tracking-wide
-    bg-gradient-to-r
-    from-red-400
-    via-purple-400
-    to-blue-400
-    bg-clip-text
-    text-transparent
-    drop-shadow-lg
-    "
-                  >
-                    Admin Control Dashboard
-                  </h1>
-                </div>
+<div>
 
-                {/* ================= ADMIN PROFILE CARD ================= */}
+<div className="flex items-center gap-2">
 
-                <div
-                  className="
-mt-6
-flex items-center gap-6
-px-8 py-5
+<span className="text-lg">⚡</span>
+
+<h1
+className="
+text-lg sm:text-xl md:text-2xl lg:text-3xl
+font-bold
+bg-gradient-to-r
+from-blue-400
+via-green-400
+to-blue-500
+bg-clip-text
+text-transparent
+tracking-wide
+"
+>
+Admin Control Dashboard
+</h1>
+
+</div>
+
+<p className="text-gray-400 text-xs sm:text-sm mt-1">
+Manage employees, monitor tasks, and analyze performance insights across departments.
+</p>
+
+</div>
+
+</div>
+
+{/* ================= ADMIN PROFILE CARD ================= */}
+
+<div
+className="
+w-full
+max-w-xl
+p-5
 rounded-2xl
 bg-gradient-to-r from-white/5 to-white/[0.02]
 border border-white/10
-shadow-[0_15px_50px_rgba(0,0,0,0.65)]
+shadow-[0_20px_60px_rgba(0,0,0,0.7)]
 backdrop-blur-xl
 "
-                >
-                  {/* Avatar */}
-                  <div
-                    className="
-w-14 h-14
+>
+
+<div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6">
+
+{/* Avatar */}
+
+<div
+className="
+w-12 h-12
 flex items-center justify-center
 rounded-full
-bg-gradient-to-br from-blue-500 to-purple-600
-text-white text-lg font-semibold
+bg-gradient-to-br from-blue-500 to-green-500
+text-white font-semibold
 shadow-lg
 "
-                  >
-                    {user?.name?.charAt(0)}
-                  </div>
+>
+{user?.name?.charAt(0)}
+</div>
 
-                  {/* User Info */}
-                  <div>
-                    <p className="text-white font-semibold text-base">
-                      {user?.name}
-                    </p>
+{/* User Info */}
 
-                    <p className="text-green-300 text-sm">{user?.email}</p>
-                  </div>
+<div className="flex-1">
 
-                  {/* Divider */}
-                  <div className="h-10 w-[1px] bg-white/10" />
+<p className="text-white font-semibold text-sm sm:text-base">
+{user?.name}
+</p>
 
-                  {/* Role */}
-                  <div className="text-left">
-                    <p className="text-xs text-gray-400 uppercase tracking-wider">
-                      Role
-                    </p>
+<p className="text-green-300 text-xs sm:text-sm">
+{user?.email}
+</p>
 
-                    <p className="text-blue-400 text-base font-medium">
-                      {user?.role}
-                    </p>
-                  </div>
+</div>
 
-                  {/* Divider */}
-                  <div className="h-10 w-[1px] bg-white/10" />
+{/* Role */}
 
-                  {/* Department */}
-                  <div className="text-left">
-                    <p className="text-xs text-gray-400 uppercase tracking-wider">
-                      Department
-                    </p>
+<div>
 
-                    <p className="text-purple-400 text-base font-medium">
-                      {user?.department}
-                    </p>
-                  </div>
-                </div>
+<p className="text-[10px] text-gray-400 uppercase tracking-wider">
+Role
+</p>
 
-                {/* Description */}
-                <p className="mt-4 text-sm text-gray-400 max-w-xl">
-                  Monitor employee productivity, manage departmental tasks, and
-                  analyze real-time performance metrics from one centralized
-                  control panel.
-                </p>
-              </div>
-            </div>
+<p className="text-blue-400 text-sm font-medium">
+{user?.role}
+</p>
 
-            {/* ================= RIGHT SIDE BADGE ================= */}
+</div>
 
-            <div
-              className="
-hidden md:flex
+{/* Department */}
+
+<div>
+
+<p className="text-[10px] text-gray-400 uppercase tracking-wider">
+Department
+</p>
+
+<p className="text-green-400 text-sm font-medium">
+{user?.department}
+</p>
+
+</div>
+
+</div>
+
+</div>
+
+{/* Description */}
+
+<p className="text-gray-400 text-xs sm:text-sm max-w-xl">
+Monitor employee productivity, manage departmental tasks and track real-time performance metrics from one centralized control panel.
+</p>
+
+</div>
+
+
+{/* ================= RIGHT BADGE ================= */}
+
+<div
+className="
+hidden xl:flex
 items-center gap-2
-px-6 py-2
+px-5 py-2
 rounded-lg
-bg-gradient-to-r from-red-500/10 to-purple-500/10
-border border-red-500/20
-text-red-400
-text-sm font-medium
-tracking-wide
+bg-gradient-to-r from-blue-500/10 to-green-500/10
+border border-green-500/20
+text-green-400
+text-xs font-semibold
+tracking-wider
 backdrop-blur-xl
-shadow-inner
+shadow-[0_0_30px_rgba(34,197,94,0.25)]
 "
-            >
-              ⚡ ADMIN PANEL
-            </div>
-          </div>
-        </div>
+>
+
+<span className="w-2 h-2 rounded-full bg-green-400 animate-pulse"></span>
+
+ADMIN PANEL
+
+</div>
+
+</div>
+
+</div>
 
         {/* ================= DASHBOARD INSIGHTS ================= */}
 
@@ -725,7 +806,7 @@ shadow-inner
             </div>
 
             {/* KPI Cards */}
-            <div className="grid md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 md:gap-6">
               {/* TOTAL TASKS */}
               <div
                 className="
@@ -832,7 +913,7 @@ shadow-inner
         </div>
 
         {/* ================= ANALYTICS SECTION ================= */}
-        <div className="grid grid-cols-1 xl:grid-cols-2 gap-8 mt-10">
+<div ref={analyticsRef} className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8 mt-10">
           {/* ================= PIE CHART CARD ================= */}
           <div
             className="
@@ -866,17 +947,19 @@ shadow-inner
 
               {/* Chart Container */}
               <div
-                className="
-        relative
-        flex justify-center items-center
-        rounded-xl
-        bg-black/30
-        border border-white/10
-        p-6 h-88
-      "
-              >
+className="
+relative
+flex justify-center items-center
+rounded-xl
+bg-black/30
+border border-white/10
+p-4 sm:p-6
+h-auto
+"
+>
+              
                 <div id="taskPieChart">
-                  <PieChart width={340} height={260}>
+                  <PieChart width={280} height={240}>
                     <Pie
                       data={statusData}
                       dataKey="value"
@@ -977,9 +1060,9 @@ shadow-inner
       "
               >
                 <div id="departmentBarChart">
-                  <BarChart
-                    width={420}
-                    height={300}
+<BarChart
+  width={320}
+  height={260}
                     data={Object.values(
                       tasks.reduce((acc, task) => {
                         acc[task.department] = acc[task.department] || {
@@ -1046,10 +1129,11 @@ shadow-inner
 
         {/* ================= DOWNLOAD REPORT CARD ================= */}
 
-        <div
+        <div ref={downloadRef}
           className="
   relative flex flex-col md:flex-row
-  items-start md:items-center
+items-start md:items-center
+flex-wrap
   justify-between
   gap-4
   mt-10
@@ -1099,7 +1183,7 @@ shadow-inner
 
         {/* ================= TASK ASSIGNMENT HEADER ================= */}
 
-        <div className="relative mb-10 group">
+        <div ref={assignRef} className="relative mb-10 group">
           {/* Animated Border Glow */}
           <div
             className="
@@ -1198,7 +1282,6 @@ shadow-inner
         </div>
 
         {/* Assign Task Form */}
-        {/* Assign Task Form */}
         <form
           onSubmit={handleAssign}
           className="
@@ -1245,7 +1328,7 @@ shadow-inner
             </div>
 
             {/* Form Grid */}
-            <div className="grid grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5 md:gap-6">
               {/* Employee Email */}
               <div className="relative col-span-2">
                 <Mail
@@ -1392,40 +1475,87 @@ shadow-inner
               </div>
 
               {/* File Upload */}
-              <div className="col-span-2">
-                <label
-                  className="
-          flex items-center justify-between
-          w-full px-4 py-3
-          rounded-xl
-          bg-[#0f172a]
-          border border-white/10
-          hover:border-blue-500
-          transition
-          cursor-pointer
-          "
-                >
-                  <div className="flex items-center gap-2 text-gray-400">
-                    <Upload size={16} />
-                    <span>
-                      {files.length > 0
-                        ? `${files.length} file(s) selected`
-                        : "Upload Task Files"}
-                    </span>
-                  </div>
+<div className="col-span-2 space-y-3">
 
-                  <span className="px-3 py-1 text-xs rounded-md bg-blue-600 text-white">
-                    Browse
-                  </span>
+<label
+className="
+flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3
+w-full px-4 py-3
+rounded-xl
+bg-[#0f172a]
+border border-white/10
+hover:border-blue-500
+transition
+cursor-pointer
+"
+>
 
-                  <input
-                    type="file"
-                    multiple
-                    onChange={(e) => setFiles([...e.target.files])}
-                    className="hidden"
-                  />
-                </label>
-              </div>
+<div className="flex items-center gap-2 text-gray-400">
+<Upload size={16}/>
+<span>
+{files.length > 0
+? `${files.length} file(s) selected`
+: "Upload Task Files"}
+</span>
+</div>
+
+<span className="px-3 py-1 text-xs rounded-md bg-blue-600 text-white">
+Browse
+</span>
+
+<input
+type="file"
+multiple
+onChange={(e) => setFiles([...files, ...Array.from(e.target.files)])}
+className="hidden"
+/>
+
+</label>
+
+{/* Selected Files List */}
+
+{files.length > 0 && (
+
+<div className="space-y-2">
+
+{files.map((file,index)=>(
+<div
+key={index}
+className="
+flex items-center justify-between
+bg-[#020617]
+border border-white/10
+rounded-lg
+px-3 py-2
+text-sm
+"
+>
+
+<div className="flex items-center gap-2 text-gray-300 truncate">
+<FileText size={16}/>
+<span className="truncate">{file.name}</span>
+</div>
+
+<button
+type="button"
+onClick={() => setFiles(files.filter((_,i)=>i!==index))}
+className="
+text-red-400
+hover:text-red-300
+transition
+"
+>
+<Trash2 size={16}/>
+</button>
+
+</div>
+))}
+
+</div>
+
+)}
+
+</div>
 
               {/* Assign Button */}
               <button
@@ -1451,7 +1581,7 @@ shadow-inner
         </form>
 
         {/* ======================= TASK CARDS SECTION ======================= */}
-        <div className="mt-16">
+        <div ref={tasksRef} className="mt-16">
           {/* Section Header */}
           <div
             className="
@@ -1511,10 +1641,11 @@ shadow-inner
                 <div
                   className="
           grid
-          grid-cols-1
-          sm:grid-cols-2
-          xl:grid-cols-3
-          gap-6
+grid-cols-1
+sm:grid-cols-2
+lg:grid-cols-2
+xl:grid-cols-3
+gap-5 md:gap-6
         "
                 >
                   {deptTasks.map((task, index) => {
@@ -1567,7 +1698,7 @@ shadow-inner
                         <div className="relative z-10 space-y-6">
                           {/* Title */}
                           <h3 className="text-xl font-semibold text-white flex items-center gap-2">
-                            📌 {task.description}
+                            📌 <span className="break-words">{task.description}</span>
                           </h3>
 
                           {/* Info Grid */}
@@ -1664,7 +1795,7 @@ Employee Submissions
 
 <div
 key={index}
-className="flex items-center justify-between"
+className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2"
 >
 
 <a
@@ -1836,227 +1967,329 @@ className="text-green-400 hover:text-green-300"
 
         {/* ================= EXTENSION PANEL ================= */}
 
-        <div className="mt-16">
-          {/* Header */}
-          <div
-            className="
-mb-10 flex items-center justify-between
-border-b border-blue-500/20 pb-4
-"
-          >
-            <div className="flex items-center gap-3">
-              <div
-                className="
-w-9 h-9
-flex items-center justify-center
-rounded-lg
-bg-blue-500/10
-border border-blue-500/30
-"
-              >
-                <FileText size={18} className="text-blue-400" />
-              </div>
+       <div ref={extensionsRef} className="mt-16">
 
-              <h2 className="text-xl md:text-2xl font-semibold text-white tracking-wide">
-                Extension Requests
-              </h2>
-            </div>
-          </div>
-
-          {/* Cards */}
-          <div className="grid md:grid-cols-2 gap-8">
-            {extensions
-              .filter((ext) => ext.status === "Pending")
-              .map((ext) => (
-                <div
-                  key={ext._id}
-                  className="
-group relative rounded-2xl p-6
-bg-gradient-to-br from-[#020617] via-[#0f172a] to-[#020617]
-border border-white/10
-shadow-[0_25px_70px_rgba(0,0,0,0.8)]
-transition-all duration-500
-hover:-translate-y-2
-hover:shadow-[0_35px_100px_rgba(0,0,0,0.9)]
+{/* Header */}
+<div
+className="
+relative
+mb-10
+p-5 md:p-6
+rounded-2xl
+bg-gradient-to-r from-[#0b1a35] via-[#0e234a] to-[#0b1a35]
+border border-blue-900
+shadow-[0_20px_60px_rgba(0,0,0,0.8)]
 overflow-hidden
 "
-                >
-                  {/* animated glow */}
-                  <div className="absolute -top-16 -right-16 w-64 h-64 bg-blue-500/10 blur-3xl"></div>
-                  <div className="absolute -bottom-16 -left-16 w-64 h-64 bg-purple-500/10 blur-3xl"></div>
+>
 
-                  <div className="relative z-10 space-y-6 text-sm">
-                    {/* Employee */}
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        <div
-                          className="
-w-10 h-10 rounded-lg
+{/* Top Accent Line */}
+<div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500"/>
+
+{/* Background glow */}
+<div className="absolute -top-10 -right-10 w-48 h-48 bg-blue-500/10 blur-3xl"></div>
+<div className="absolute -bottom-10 -left-10 w-48 h-48 bg-purple-500/10 blur-3xl"></div>
+
+<div className="relative flex items-center justify-between flex-wrap gap-4">
+
+{/* LEFT SIDE */}
+<div className="flex items-center gap-4">
+
+{/* Icon */}
+<div
+className="
+w-11 h-11
 flex items-center justify-center
-bg-blue-500/10 border border-blue-500/30
+rounded-xl
+bg-blue-600/20
+border border-blue-500/40
+shadow-md
 "
-                        >
-                          <Mail size={18} className="text-blue-400" />
-                        </div>
+>
+<FileText size={20} className="text-blue-400"/>
+</div>
 
-                        <div>
-                          <p className="text-xs text-gray-400 uppercase tracking-wider">
-                            Employee
-                          </p>
+{/* Title */}
+<div>
 
-                          <p className="text-white font-semibold text-lg">
-                            {ext.employee?.email ||
-                              ext.task?.employeeEmail ||
-                              "N/A"}
-                          </p>
-                        </div>
-                      </div>
+<h2 className="text-xl md:text-2xl font-semibold text-white tracking-wide">
+Extension Requests
+</h2>
 
-                      <span
-                        className="
-flex items-center gap-1
-px-3 py-1 text-xs rounded-full
-bg-blue-500/10 text-blue-400
+<p className="text-gray-400 text-sm">
+Review employee extension requests and approve or reject them.
+</p>
+
+</div>
+
+</div>
+
+
+{/* RIGHT SIDE BADGE */}
+<div
+className="
+flex items-center gap-2
+px-4 py-2
+rounded-lg
+bg-blue-600/15
 border border-blue-500/30
+text-blue-400
+text-xs font-semibold
+tracking-wider
 "
-                      >
-                        <CalendarDays size={14} />
+>
 
-                        {ext.requestedDate
-                          ? new Date(ext.requestedDate).toLocaleDateString()
-                          : "N/A"}
-                      </span>
-                    </div>
+<span className="w-2 h-2 rounded-full bg-blue-400 animate-pulse"></span>
 
-                    {/* Department */}
-                    <div
-                      className="
+PENDING REQUESTS
+
+</div>
+
+</div>
+
+</div>
+
+{/* Cards */}
+<div className="grid grid-cols-1 md:grid-cols-2 gap-5 md:gap-8">
+{extensions
+.filter((ext) => ext.status === "Pending")
+.map((ext) => (
+
+<div
+key={ext._id}
+className="
+group relative rounded-2xl p-6
+bg-[#0b1a35]
+border border-blue-900
+shadow-[0_20px_60px_rgba(0,0,0,0.8)]
+transition-all duration-300
+hover:-translate-y-1
+hover:shadow-[0_30px_90px_rgba(0,0,0,0.9)]
+"
+>
+
+<div className="space-y-6 text-sm">
+
+{/* EMPLOYEE + DATE */}
+<div className="flex items-center justify-between">
+
+<div className="flex items-center gap-3">
+
+<div className="w-10 h-10 rounded-lg flex items-center justify-center bg-blue-900 border border-blue-700">
+<Mail size={18} className="text-blue-300" />
+</div>
+
+<div>
+<p className="text-xs text-gray-100 uppercase tracking-wider">
+Employee Mail
+</p>
+
+<p className="text-white font-semibold text-lg">
+{ext.employee?.email ||
+ext.task?.employeeEmail ||
+"N/A"}
+</p>
+</div>
+
+</div>
+
+{/* DEMAND DATE */}
+<div className="flex items-center gap-2 px-3 py-1 rounded-lg bg-[#10244d] border border-blue-700">
+
+<CalendarDays size={14} className="text-blue-300"/>
+
+<div>
+<p className="text-[10px] text-gray-100 leading-none">
+Demand Date
+</p>
+
+<p className="text-blue-300 text-xs font-medium">
+{ext.requestedDate
+? new Date(ext.requestedDate).toLocaleDateString()
+: "N/A"}
+</p>
+
+</div>
+
+</div>
+
+</div>
+
+
+{/* EMPLOYEE DEPARTMENT */}
+<div className="
 flex items-center gap-3
 p-4 rounded-xl
-bg-black/30
-border border-white/10
-"
-                    >
-                      <Building2 size={18} className="text-purple-400" />
+bg-[#0e234a]
+border border-blue-900
+">
 
-                      <div>
-                        <p className="text-xs text-gray-400">Department</p>
+<Building2 size={18} className="text-purple-400" />
 
-                        <p className="text-white font-medium">
-                          {ext.task?.department || "N/A"}
-                        </p>
-                      </div>
-                    </div>
+<div>
+<p className="text-xs text-blue-400">
+Employee Department
+</p>
 
-                    {/* Reason */}
-                    <div
-                      className="
+<p className="text-white font-medium">
+{ext.task?.department || "N/A"}
+</p>
+</div>
+
+</div>
+
+
+{/* REASON */}
+<div className="
 p-4 rounded-xl
-bg-black/30 border border-white/10
-"
-                    >
-                      <p className="text-gray-400 text-xs mb-2 flex items-center gap-2">
-                        <MessageSquare size={14} />
-                        Reason
-                      </p>
+bg-[#0e234a]
+border border-blue-900
+">
 
-                      <p className="text-gray-200 leading-relaxed">
-                        {ext.reason}
-                      </p>
-                    </div>
+<p className="text-gray-100 text-xs mb-2 flex items-center gap-2">
 
-                    {/* Proof File */}
-                    {ext.proofFile && (
-                      <a
-                        href={`https://taskhub-3-i600.onrender.com/uploads/${ext.proofFile}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="
+<MessageSquare size={14} />
+
+Reason for Extension
+
+</p>
+
+<p className="text-gray-200 leading-relaxed">
+{ext.reason}
+</p>
+
+</div>
+
+
+{/* EXTENSION SUPPORTING DOCS */}
+{ext.proofFile && (
+
+<div className="space-y-2">
+
+<p className="text-xs text-gray-100 uppercase tracking-wider">
+Extension Supporting Docs
+</p>
+
+<a
+href={`https://taskhub-3-i600.onrender.com/uploads/${ext.proofFile}`}
+target="_blank"
+rel="noopener noreferrer"
+className="
 flex items-center gap-3 px-4 py-3 rounded-xl
-bg-blue-500/10 border border-blue-500/30
-hover:bg-blue-500/20
-transition-all
-"
-                      >
-                        <FileText size={16} className="text-blue-400" />
-
-                        <span className="text-blue-400 text-sm truncate">
-                          {ext.proofFile}
-                        </span>
-                      </a>
-                    )}
-
-                    {/* Instruction */}
-                    <textarea
-                      placeholder="Add instruction for employee..."
-                      value={instruction[ext._id] || ""}
-                      onChange={(e) =>
-                        setInstruction({
-                          ...instruction,
-                          [ext._id]: e.target.value,
-                        })
-                      }
-                      className="
-w-full p-3 rounded-xl
-bg-black/30 text-white
-border border-white/10
-focus:outline-none focus:border-blue-500
+bg-[#10244d]
+border border-blue-700
+hover:bg-[#153067]
 transition
 "
-                    />
+>
 
-                    {/* Buttons */}
-                    <div className="flex gap-4 pt-2">
-                      <button
-                        onClick={() =>
-                          handleExtensionDecision(ext._id, "Approved")
-                        }
-                        disabled={
-                          !instruction[ext._id] ||
-                          instruction[ext._id].trim() === ""
-                        }
-                        className={`flex-1 py-3 rounded-xl font-semibold
+<FileText size={16} className="text-blue-300" />
+
+<span className="text-blue-300 text-sm truncate">
+{ext.proofFile}
+</span>
+
+</a>
+
+</div>
+
+)}
+
+
+{/* ENTER MESSAGE */}
+<div className="space-y-2">
+
+<p className="text-xs text-gray-100 uppercase tracking-wider">
+Enter Your Message
+</p>
+
+<textarea
+placeholder="Write instruction for employee..."
+value={instruction[ext._id] || ""}
+onChange={(e) =>
+setInstruction({
+...instruction,
+[ext._id]: e.target.value,
+})
+}
+className="
+w-full p-3 rounded-xl
+bg-[#0e234a]
+text-white
+border border-blue-900
+focus:outline-none
+focus:border-blue-500
+transition
+"
+/>
+
+</div>
+
+
+{/* BUTTONS */}
+<div className="flex gap-4 pt-2">
+
+<button
+onClick={() =>
+handleExtensionDecision(ext._id, "Approved")
+}
+disabled={
+!instruction[ext._id] ||
+instruction[ext._id].trim() === ""
+}
+className={`flex-1 py-3 rounded-xl font-semibold
 flex items-center justify-center gap-2
 transition-all
 
 ${
-  instruction[ext._id] && instruction[ext._id].trim() !== ""
-    ? "bg-gradient-to-r from-green-500 to-emerald-600 hover:scale-105 shadow-lg hover:shadow-emerald-500/40"
-    : "bg-gray-700 text-gray-400 cursor-not-allowed"
+instruction[ext._id] &&
+instruction[ext._id].trim() !== ""
+? "bg-green-600 hover:bg-green-500 shadow-lg hover:shadow-green-500/40"
+: "bg-gray-700 text-gray-400 cursor-not-allowed"
 }
 `}
-                      >
-                        <CheckCircle2 size={18} />
-                        Approve
-                      </button>
+>
 
-                      <button
-                        onClick={() =>
-                          handleExtensionDecision(ext._id, "Rejected")
-                        }
-                        disabled={
-                          !instruction[ext._id] ||
-                          instruction[ext._id].trim() === ""
-                        }
-                        className={`flex-1 py-3 rounded-xl font-semibold
+<CheckCircle2 size={18} />
+Approve
+
+</button>
+
+
+<button
+onClick={() =>
+handleExtensionDecision(ext._id, "Rejected")
+}
+disabled={
+!instruction[ext._id] ||
+instruction[ext._id].trim() === ""
+}
+className={`flex-1 py-3 rounded-xl font-semibold
 flex items-center justify-center gap-2
 transition-all
 
 ${
-  instruction[ext._id] && instruction[ext._id].trim() !== ""
-    ? "bg-gradient-to-r from-red-500 to-rose-600 hover:scale-105 shadow-lg hover:shadow-red-500/40"
-    : "bg-gray-700 text-gray-400 cursor-not-allowed"
+instruction[ext._id] &&
+instruction[ext._id].trim() !== ""
+? "bg-red-600 hover:bg-red-500 shadow-lg hover:shadow-red-500/40"
+: "bg-gray-700 text-gray-400 cursor-not-allowed"
 }
 `}
-                      >
-                        <XCircle size={18} />
-                        Reject
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              ))}
-          </div>
+>
+
+<XCircle size={18} />
+Reject
+
+</button>
+
+</div>
+
+</div>
+
+</div>
+
+))}
+</div>
         </div>
       </div>{" "}
       {/* END Dashboard Content */}
