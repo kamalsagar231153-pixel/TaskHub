@@ -537,25 +537,26 @@ const extensionsRef = useRef(null);
   return (
 <div className="flex flex-col md:flex-row">
   <Sidebar collapsed={collapsed} setCollapsed={setCollapsed} />
-<div
-className={`
+
+  <div
+    className={`
 relative w-full
-transition-all duration-300
+transition-all duration-500 ease-in-out
 ${collapsed ? "md:ml-20" : "md:ml-72"}
 p-4 sm:p-6 md:p-10
 min-h-screen space-y-10
 bg-gradient-to-br from-[#020617] via-[#0f172a] to-[#111827]
 overflow-hidden
 `}
->
-        {/* Background ambient glow */}
-        <div
-          className="absolute inset-0 -z-10
+  >
+
+{/* Background ambient glow */}
+
+<div
+className="absolute inset-0 -z-10 animate-pulse
 bg-[radial-gradient(circle_at_20%_20%,#3b82f630,transparent_40%),
 radial-gradient(circle_at_80%_70%,#9333ea30,transparent_40%)]"
-        />
-
-{/* ================= ULTRA PREMIUM ADMIN HEADER ================= */}
+/>
 
 {/* ================= PREMIUM ADMIN DASHBOARD HEADER ================= */}
 
@@ -570,17 +571,30 @@ border border-white/10
 shadow-[0_35px_100px_rgba(0,0,0,0.9)]
 backdrop-blur-xl
 overflow-hidden
+transition-all duration-500
+hover:shadow-[0_40px_120px_rgba(59,130,246,0.35)]
+hover:-translate-y-1
+group
 "
 >
 
 {/* Top Animated Gradient Line */}
 
-<div className="absolute top-0 left-0 w-full h-[3px] bg-gradient-to-r from-blue-500 via-green-500 to-blue-600"/>
+<div className="absolute top-0 left-0 w-full h-[3px]
+bg-gradient-to-r from-blue-500 via-green-500 to-blue-600
+animate-[pulse_3s_infinite]" />
 
 {/* Ambient Glow Effects */}
 
-<div className="absolute -top-32 -left-32 w-[420px] h-[420px] bg-blue-500/20 blur-[160px] rounded-full"/>
-<div className="absolute -bottom-32 -right-32 w-[420px] h-[420px] bg-green-500/20 blur-[160px] rounded-full"/>
+<div className="absolute -top-32 -left-32 w-[420px] h-[420px]
+bg-blue-500/20 blur-[160px] rounded-full
+opacity-70 group-hover:opacity-100
+transition duration-500" />
+
+<div className="absolute -bottom-32 -right-32 w-[420px] h-[420px]
+bg-green-500/20 blur-[160px] rounded-full
+opacity-70 group-hover:opacity-100
+transition duration-500" />
 
 <div className="relative z-10 flex flex-col xl:flex-row gap-8 xl:items-center xl:justify-between">
 
@@ -602,9 +616,11 @@ rounded-xl
 bg-gradient-to-br from-blue-500/20 to-green-500/20
 border border-white/10
 shadow-lg
+transition-all duration-300
+group-hover:scale-110 group-hover:rotate-3
 "
 >
-<span className="text-xl sm:text-2xl">🧑‍💻</span>
+<span className="text-xl sm:text-2xl animate-pulse">🧑‍💻</span>
 </div>
 
 {/* Title */}
@@ -613,7 +629,7 @@ shadow-lg
 
 <div className="flex items-center gap-2">
 
-<span className="text-lg">⚡</span>
+<span className="text-lg animate-bounce">⚡</span>
 
 <h1
 className="
@@ -626,6 +642,8 @@ to-blue-500
 bg-clip-text
 text-transparent
 tracking-wide
+transition-all duration-300
+group-hover:tracking-wider
 "
 >
 Admin Control Dashboard
@@ -633,7 +651,9 @@ Admin Control Dashboard
 
 </div>
 
-<p className="text-gray-400 text-xs sm:text-sm mt-1">
+<p className="text-gray-400 text-xs sm:text-sm mt-1
+transition-all duration-300
+group-hover:text-gray-300">
 Manage employees, monitor tasks, and analyze performance insights across departments.
 </p>
 
@@ -653,6 +673,10 @@ bg-gradient-to-r from-white/5 to-white/[0.02]
 border border-white/10
 shadow-[0_20px_60px_rgba(0,0,0,0.7)]
 backdrop-blur-xl
+transition-all duration-500
+hover:scale-[1.02]
+hover:border-blue-500/30
+hover:shadow-[0_25px_80px_rgba(59,130,246,0.35)]
 "
 >
 
@@ -668,6 +692,9 @@ rounded-full
 bg-gradient-to-br from-blue-500 to-green-500
 text-white font-semibold
 shadow-lg
+transition-all duration-300
+hover:scale-110
+hover:shadow-[0_0_20px_rgba(59,130,246,0.8)]
 "
 >
 {user?.name?.charAt(0)}
@@ -689,7 +716,7 @@ shadow-lg
 
 {/* Role */}
 
-<div>
+<div className="transition-all duration-300 hover:scale-105">
 
 <p className="text-[10px] text-gray-400 uppercase tracking-wider">
 Role
@@ -703,7 +730,7 @@ Role
 
 {/* Department */}
 
-<div>
+<div className="transition-all duration-300 hover:scale-105">
 
 <p className="text-[10px] text-gray-400 uppercase tracking-wider">
 Department
@@ -721,7 +748,9 @@ Department
 
 {/* Description */}
 
-<p className="text-gray-400 text-xs sm:text-sm max-w-xl">
+<p className="text-gray-400 text-xs sm:text-sm max-w-xl
+transition-all duration-300
+hover:text-gray-300">
 Monitor employee productivity, manage departmental tasks and track real-time performance metrics from one centralized control panel.
 </p>
 
@@ -743,10 +772,14 @@ text-xs font-semibold
 tracking-wider
 backdrop-blur-xl
 shadow-[0_0_30px_rgba(34,197,94,0.25)]
+transition-all duration-300
+hover:scale-110
+hover:shadow-[0_0_40px_rgba(34,197,94,0.6)]
+cursor-pointer
 "
 >
 
-<span className="w-2 h-2 rounded-full bg-green-400 animate-pulse"></span>
+<span className="w-2 h-2 rounded-full bg-green-400 animate-ping"></span>
 
 ADMIN PANEL
 
@@ -755,6 +788,8 @@ ADMIN PANEL
 </div>
 
 </div>
+
+
 
         {/* ================= DASHBOARD INSIGHTS ================= */}
 
@@ -965,8 +1000,8 @@ h-auto
                       dataKey="value"
                       cx="50%"
                       cy="50%"
-                      innerRadius={60}
-                      outerRadius={120}
+                      innerRadius={55}
+                      outerRadius={95}
                       paddingAngle={5}
                       stroke="#0f172a"
                       strokeWidth={3}
@@ -1626,16 +1661,68 @@ transition
             const DeptIcon = departmentIcons?.[dept] || Briefcase;
 
             return (
-              <div key={dept} className="mb-12">
-                {/* Department Title */}
-                <div className="flex items-center gap-3 mb-6">
-                  <div className="w-1.5 h-8 bg-gradient-to-b from-blue-500 to-purple-500 rounded-full"></div>
+<div key={dept} className="mb-12 group">
 
-                  <h3 className="text-lg font-semibold text-blue-400 tracking-wide flex items-center gap-2">
-                    <DeptIcon size={18} />
-                    {dept} Department
-                  </h3>
-                </div>
+  <div
+    className="
+    relative flex items-center gap-4
+    px-6 py-4
+    rounded-xl
+    bg-gradient-to-r from-[#0f172a] via-[#111827] to-[#0b0f19]
+    border border-white/10
+    shadow-lg
+    transition-all duration-300
+    hover:shadow-red-500/20
+    hover:scale-[1.02]
+    overflow-hidden
+    "
+  >
+
+    {/* Animated Glow Background */}
+    <div className="
+      absolute inset-0 opacity-0 group-hover:opacity-100
+      transition duration-500
+      bg-gradient-to-r from-red-500/10 via-transparent to-blue-500/10
+      blur-xl
+    "></div>
+
+    {/* Left Accent Bar */}
+    <div className="
+      w-1.5 h-10 rounded-full
+      bg-gradient-to-b from-red-500 via-purple-500 to-blue-500
+    "></div>
+
+    {/* Icon Card */}
+    <div
+      className="
+      flex items-center justify-center
+      w-10 h-10
+      rounded-lg
+      bg-gradient-to-br from-red-600/20 to-blue-600/20
+      border border-white/10
+      text-blue-400
+      transition-all duration-300
+      group-hover:rotate-6
+      group-hover:scale-110
+      "
+    >
+      <DeptIcon size={18} />
+    </div>
+
+    {/* Title */}
+    <h3
+      className="
+      text-lg font-semibold tracking-wide
+      bg-gradient-to-r from-red-400 via-purple-400 to-blue-400
+      bg-clip-text text-transparent
+      transition-all duration-300
+      group-hover:tracking-wider
+      "
+    >
+      {dept} Department
+    </h3>
+
+  </div>
 
                 {/* Responsive Task Grid */}
                 <div
@@ -1761,7 +1848,7 @@ space-y-2
                               {task.adminFiles.map((file, index) => (
                                 <a
                                   key={index}
-                                  href={`https://taskhub-3-i600.onrender.com/uploads/${file}`}
+                                  href={`http://localhost:4000/uploads/${file}`}
                                   target="_blank"
                                   rel="noopener noreferrer"
                                   className="flex items-center gap-2 text-blue-400 hover:text-blue-300 text-sm"
@@ -1799,7 +1886,7 @@ className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2"
 >
 
 <a
-href={`https://taskhub-3-i600.onrender.com/uploads/${file}`}
+href={`http://localhost:4000/uploads/${file}`}
 target="_blank"
 rel="noopener noreferrer"
 className="flex items-center gap-2 text-green-400 text-sm hover:text-green-300"
@@ -1814,7 +1901,7 @@ className="flex items-center gap-2 text-green-400 text-sm hover:text-green-300"
 <div className="flex gap-3">
 
 <a
-href={`https://taskhub-3-i600.onrender.com/uploads/${file}`}
+href={`http://localhost:4000/uploads/${file}`}
 target="_blank"
 className="text-green-400 hover:text-green-300"
 >
@@ -2171,7 +2258,7 @@ Extension Supporting Docs
 </p>
 
 <a
-href={`https://taskhub-3-i600.onrender.com/uploads/${ext.proofFile}`}
+href={`http://localhost:4000/uploads/${ext.proofFile}`}
 target="_blank"
 rel="noopener noreferrer"
 className="
